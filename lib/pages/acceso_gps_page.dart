@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:flutter/material.dart';
 import 'package:permission_handler/permission_handler.dart';
 
@@ -58,13 +60,14 @@ class _AccesoGpsPageState extends State<AccesoGpsPage>
 
   void accesoGPS(PermissionStatus status) {
     print(status);
+
     switch (status) {
       case PermissionStatus.granted:
         Navigator.pushReplacementNamed(context, 'mapa');
         break;
+      case PermissionStatus.permanentlyDenied:
       case PermissionStatus.restricted:
       case PermissionStatus.denied:
-      case PermissionStatus.permanentlyDenied:
         openAppSettings();
     }
   }
