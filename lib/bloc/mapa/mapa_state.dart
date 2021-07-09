@@ -3,9 +3,32 @@ part of 'mapa_bloc.dart';
 @immutable
 class MapaState {
   final bool mapaListo;
+  final bool dibujarRecorrido;
+  final bool seguirUbicacion;
+  final LatLng? ubicacionCentral;
 
-  MapaState({this.mapaListo = false});
+  //polylines
+  final Map<String, Polyline> polylines;
 
-  MapaState copyWith({bool? mapaListo}) =>
-      MapaState(mapaListo: mapaListo ?? this.mapaListo);
+  MapaState(
+      {this.mapaListo = false,
+      this.dibujarRecorrido = true,
+      this.seguirUbicacion = false,
+      this.ubicacionCentral,
+      Map<String, Polyline>? polylines})
+      : this.polylines = polylines ?? new Map();
+
+  MapaState copyWith(
+          {bool? mapaListo,
+          bool? dibujarRecorrido,
+          bool? seguirUbicacion,
+          LatLng? ubicacionCentral,
+          Map<String, Polyline>? polylines}) =>
+      MapaState(
+        mapaListo: mapaListo ?? this.mapaListo,
+        dibujarRecorrido: dibujarRecorrido ?? this.dibujarRecorrido,
+        seguirUbicacion: seguirUbicacion ?? this.seguirUbicacion,
+        ubicacionCentral: ubicacionCentral ?? this.ubicacionCentral,
+        polylines: polylines ?? this.polylines,
+      );
 }

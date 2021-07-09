@@ -35,6 +35,8 @@ class _MapaPAgeState extends State<MapaPAge> {
         mainAxisAlignment: MainAxisAlignment.end,
         children: [
           BtnUbicacion(),
+          BtnMiRuta(),
+          BtnSeguirUbicacion(),
         ],
       ),
     );
@@ -44,6 +46,9 @@ class _MapaPAgeState extends State<MapaPAge> {
     if ((!state.existeUbicacion)) return Center(child: Text('Ubicando....'));
 
     final mapaBloc = BlocProvider.of<MapaBloc>(context);
+
+    mapaBloc.add(OnNuevaUbicacion(
+        LatLng(state.ubicacion!.latitude, state.ubicacion!.longitude)));
     final cameraPosition =
         new CameraPosition(target: state.ubicacion!, zoom: 15);
     return GoogleMap(
@@ -51,8 +56,16 @@ class _MapaPAgeState extends State<MapaPAge> {
       mapType: MapType.normal,
       myLocationEnabled: true,
       myLocationButtonEnabled: false,
+      polylines: mapaBloc.state.polylines.values.toSet(),
       onMapCreated: (GoogleMapController controller) =>
           mapaBloc.initMapa(controller),
+      onCameraMove: (cameraPosition) {
+        // Se ejecuta mentras se mueve el mapa, devuelve el CameraPosition
+        mapaBloc.add(OnMovioMapa(cameraPosition.target));
+      },
+      onCameraIdle: () {
+        // Esto se ejecuta cuando se deja de mover el mapa. No devuelve ninguna propiedad
+      },
     );
   }
 }

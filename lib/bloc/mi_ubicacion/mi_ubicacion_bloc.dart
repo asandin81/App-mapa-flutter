@@ -22,7 +22,7 @@ class MiUbicacionBloc extends Bloc<MiUbicacionEvent, MiUbicacionState> {
             distanceFilter: 10)
         .listen((_geolocator.Position position) {
       final nuevaUbicacion = new LatLng(position.latitude, position.longitude);
-      print(position);
+
       add(OnUbicacionCambio(nuevaUbicacion));
     });
 
@@ -38,7 +38,6 @@ class MiUbicacionBloc extends Bloc<MiUbicacionEvent, MiUbicacionState> {
     MiUbicacionEvent event,
   ) async* {
     if (event is OnUbicacionCambio) {
-      print(event);
       yield state.copyWith(existeUbicacion: true, ubicacion: event.ubicacion);
     }
   }
