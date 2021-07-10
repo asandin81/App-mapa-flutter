@@ -28,8 +28,15 @@ class _MapaPAgeState extends State<MapaPAge> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: BlocBuilder<MiUbicacionBloc, MiUbicacionState>(
-        builder: (context, state) => crearMapa(state),
+      body: Stack(
+        children: [
+          BlocBuilder<MiUbicacionBloc, MiUbicacionState>(
+            builder: (context, state) => crearMapa(state),
+          ),
+          //TODO: hacer toggle cuando estoy manual
+          Positioned(top: 10, child: SearchBar()),
+          MarcadorManual(),
+        ],
       ),
       floatingActionButton: Column(
         mainAxisAlignment: MainAxisAlignment.end,
@@ -51,21 +58,24 @@ class _MapaPAgeState extends State<MapaPAge> {
         LatLng(state.ubicacion!.latitude, state.ubicacion!.longitude)));
     final cameraPosition =
         new CameraPosition(target: state.ubicacion!, zoom: 15);
-    return GoogleMap(
-      initialCameraPosition: cameraPosition,
-      mapType: MapType.normal,
-      myLocationEnabled: true,
-      myLocationButtonEnabled: false,
-      polylines: mapaBloc.state.polylines.values.toSet(),
-      onMapCreated: (GoogleMapController controller) =>
-          mapaBloc.initMapa(controller),
-      onCameraMove: (cameraPosition) {
-        // Se ejecuta mentras se mueve el mapa, devuelve el CameraPosition
-        mapaBloc.add(OnMovioMapa(cameraPosition.target));
-      },
-      onCameraIdle: () {
-        // Esto se ejecuta cuando se deja de mover el mapa. No devuelve ninguna propiedad
-      },
-    );
+
+    return BlocBuilder<MapaBloc, MapaState>(builder: (context, state) {
+      return GoogleMap(
+        initialCameraPosition: cameraPosition,
+        mapType: MapType.normal,
+        myLocationEnabled: true,
+        myLocationButtonEnabled: false,
+        polylines: mapaBloc.state.polylines.values.toSet(),
+        onMapCreated: (GoogleMapController controller) =>
+            mapaBloc.initMapa(controller),
+        onCameraMove: (cameraPosition) {
+          // Se ejecuta mentras se mueve el mapa, devuelve el CameraPosition
+          mapaBloc.add(OnMovioMapa(cameraPosition.target));
+        },
+        onCameraIdle: () {
+          // Esto se ejecuta cuando se deja de mover el mapa. No devuelve ninguna propiedad
+        },
+      );
+    });
   }
 }
