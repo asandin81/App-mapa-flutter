@@ -3,7 +3,9 @@ import 'dart:convert';
 
 import 'package:bloc/bloc.dart';
 import 'package:flutter/material.dart' show Colors;
+import 'package:flutter/material.dart' show Offset;
 import 'package:google_maps_flutter/google_maps_flutter.dart';
+import 'package:mapa/helpers/helpers.dart';
 import 'package:mapa/themes/uber_map_theme.dart';
 import 'package:meta/meta.dart';
 
@@ -101,6 +103,46 @@ class MapaBloc extends Bloc<MapaEvent, MapaState> {
 
     final currentPolylines = state.polylines;
     currentPolylines['mi_ruta_destino'] = this._miRutaDestino;
-    yield state.copyWith(polylines: currentPolylines);
+
+    // Icono inicio
+    // final iconInicio = await getAssetImageMarker();
+
+    double km = event.distancia / 1000;
+    km = (km * 100).floor().toDouble();
+    km = km / 100;
+
+    final iconInicio = await getMarkerInicioIcon(event.duracion.toInt());
+    final iconoDestino =
+        await getMarkerDestinoIcon(event.nombreDestino, event.distancia);
+
+    // Marcadores
+    final markerInicio = new Marker(
+      anchor: Offset(0.1, 0.9),
+      markerId: MarkerId('inicio'),
+      position: event.rutaCoordenadas[0],
+      icon: iconInicio,
+      // infoWindow: InfoWindow(
+      //     title: event.nombreDestino,
+      //     snippet:
+      //         'Duracion recorrido: ${(event.duracion / 60).floor()} minutos')
+    ); // floor para redondear los segundos
+
+    final markerDestino = new Marker(
+      anchor: Offset(0.1, 0.9),
+      markerId: MarkerId('destino'),
+      position: event.rutaCoordenadas[event.rutaCoordenadas.length - 1],
+      icon: iconoDestino,
+      // infoWindow: InfoWindow(
+      //     title: event.nombreDestino, snippet: 'Distancia: $km Km')
+    );
+    final newMarkers = {...state.markers};
+    newMarkers['inicio'] = markerInicio;
+    newMarkers['destino'] = markerDestino;
+
+    Future.delayed(Duration(milliseconds: 300)).then((value) {
+      // _mapController!.showMarkerInfoWindow(MarkerId('inicio'));
+      //_mapController!.showMarkerInfoWindow(MarkerId('destino'));
+    });
+    yield state.copyWith(polylines: currentPolylines, markers: newMarkers);
   }
 }

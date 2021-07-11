@@ -66,6 +66,7 @@ class _MapaPAgeState extends State<MapaPAge> {
         myLocationEnabled: true,
         myLocationButtonEnabled: false,
         polylines: mapaBloc.state.polylines.values.toSet(),
+        markers: mapaBloc.state.markers.values.toSet(),
         onMapCreated: (GoogleMapController controller) =>
             mapaBloc.initMapa(controller),
         onCameraMove: (cameraPosition) {
